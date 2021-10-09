@@ -25,7 +25,7 @@ def publish(client):
     msg_count = 0
     while True:
         time.sleep(1)
-        msg = "Oi"
+        msg = [{"Yan": 12345678, "Pedro":99999999, "Ana": 8765}]
         result = client.publish(topic, msg)
         # result: [0, 1]
         status = result[0]
