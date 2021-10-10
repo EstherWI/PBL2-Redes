@@ -1,4 +1,4 @@
-import paho.mqtt.client, time, json
+import paho.mqtt.client, time, json, random
 
 topic = "pbl2"
 
@@ -21,14 +21,41 @@ def connect_mqtt():
     client.connect(host='broker.hivemq.com', port = 1883)
     return client
 
+def pacienteGrave(contador) -> dict:
+    data = [{
+        "id":contador,
+        "saturacao":random.randint(0, 95),
+        "temp":round(random.uniform(37.5, 42), 1),
+        "freq":random.randint(100,140),
+        "pressao1":random.randint(140,220),
+        "pressao2":random.randint(85,100),
+        "statusSaude":"Grave"
+    }]
+    return data
+
+def pacienteLeve(contador) ->dict:
+    data = [{
+        "id": contador,
+        "saturacao":random.randint(96, 100),
+        "temp":round(random.uniform(35.5, 37.4), 1),
+        "freq":random.randint(60,99),
+        "pressao1":random.randint(110,130),
+        "pressao2":random.randint(70,84),
+        "statusSaude":"Leve"
+    }]
+    return data
+
 def publish(client):
     msg_count = 0
+    contador = 0
     while True:
         time.sleep(1)
-        msg = [{
-            "temp":36,
-            "saturacao":95
-        }]
+        choice = random.randint(0,1)
+        if choice == 0:
+            msg = pacienteGrave(contador)
+        else:
+            msg = pacienteLeve(contador)
+        contador+=1
         result = client.publish(topic, json.dumps(msg))
         # result: [0, 1]
         status = result[0]
