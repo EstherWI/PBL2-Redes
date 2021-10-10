@@ -1,4 +1,4 @@
-import paho.mqtt.client, time
+import paho.mqtt.client, time, json
 
 topic = "pbl2"
 
@@ -25,13 +25,17 @@ def publish(client):
     msg_count = 0
     while True:
         time.sleep(1)
-        msg = [{"Yan": 12345678, "Pedro":99999999, "Ana": 8765}]
-        result = client.publish(topic, msg)
+        msg = [{
+            "temp":36,
+            "saturacao":95
+        }]
+        result = client.publish(topic, json.dumps(msg))
         # result: [0, 1]
         status = result[0]
         if status == 0:
-            print(f"Send `{msg}` to topic `{topic}`")
+            print(f"Send to topic `{topic}`")
         else:
+            print(json.dumps(msg))
             print(f"Failed to send message to topic {topic}")
         msg_count += 1
 
