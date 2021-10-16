@@ -23,26 +23,26 @@ def connect_mqtt():
 
 def pacienteGrave(contador) -> dict:
     data = [{
-        "id":contador,
+        "id":str(contador),
         "saturacao":random.randint(0, 95),
         "temp":round(random.uniform(37.5, 42), 1),
         "freq":random.randint(100,140),
         "pressao1":random.randint(140,220),
         "pressao2":random.randint(85,100),
-        "statusSaude":"Grave"
+        "status":"Grave"
     }]
     return data
 
 def pacienteLeve(contador) ->dict:
-    data = [{
+    data = {
         "id": contador,
         "saturacao":random.randint(96, 100),
         "temp":round(random.uniform(35.5, 37.4), 1),
         "freq":random.randint(60,99),
         "pressao1":random.randint(110,130),
         "pressao2":random.randint(70,84),
-        "statusSaude":"Leve"
-    }]
+        "status":"Leve"
+    }
     return data
 
 def publish(client):
