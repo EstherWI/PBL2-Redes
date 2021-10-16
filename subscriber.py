@@ -1,15 +1,13 @@
 import random
 
 import paho.mqtt.client, time
-
+from main import CrudPaciente
 
 host = 'broker.hivemq.com'
 port = 1883
 topic = "pbl2"
 # generate client ID with pub prefix randomly
 client_id = f'python-mqtt-{random.randint(0, 100)}'
-# username = 'emqx'
-# password = 'public'
 
 
 def connect_mqtt() -> paho.mqtt.client:
@@ -20,7 +18,6 @@ def connect_mqtt() -> paho.mqtt.client:
             print("Failed to connect, return code %d\n", rc)
 
     client = paho.mqtt.client.Client(client_id)
-    #client.username_pw_set(username, password)
     client.on_connect = on_connect
     client.connect(host, port)
     return client
@@ -28,7 +25,9 @@ def connect_mqtt() -> paho.mqtt.client:
 
 def subscribe(client:paho.mqtt.client):
     def on_message(client, userdata, msg):
-        print(f"Received `{msg.payload.decode()}` from `{msg.topic}` topic")
+        print(f"Recebeu`{msg.payload.decode()}` from `{msg.topic}` topic")
+
+
 
     client.subscribe(topic)
     client.on_message = on_message
