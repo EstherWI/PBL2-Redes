@@ -1,12 +1,14 @@
 import json
-import random, requests
+import random
+import requests
 
-import paho.mqtt.client, time
+import paho.mqtt.client
+import time
 from main import CrudPaciente
 
 host = 'broker.hivemq.com'
 port = 1883
-topic = "pbl2"
+topic = "paciente_pbl"
 api = CrudPaciente()
 # generate client ID with pub prefix randomly
 client_id = f'python-mqtt-{random.randint(0, 100)}'
@@ -25,13 +27,15 @@ def connect_mqtt() -> paho.mqtt.client:
     return client
 
 
-def subscribe(client:paho.mqtt.client):
+def subscribe(client: paho.mqtt.client):
     def on_message(client, userdata, msg):
         data = json.loads(msg.payload.decode())
+        data['id'] = str(data['id'])
+        if data['method'] == "post":
+            requests.post(url=f'https://connect-covid.herokuapp.com/patient', json=data)
+        else:
+            requests.put(url=f'https://connect-covid.herokuapp.com/patient/' + data['id'], json=data)
         print(f"Recebeu`{msg.payload.decode()}` from `{msg.topic}` topic")
-        requests.post(url=f'https://connect-covid.herokuapp.com/patient', json=data)
-
-
 
     client.subscribe(topic)
     client.on_message = on_message
