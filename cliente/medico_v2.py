@@ -187,6 +187,7 @@ class Ui_MainWindow(object):
         self.label_saturacao.setText(str(self.rq[self.index]['saturacao']))
         self.label_temperatura.setText(str(self.rq[self.index]['temp']))
         self.id = self.rq[self.index]['id']
+        print(self.rq[self.index])
         self.label_nomePaciente.setText("    "+ str(self.rq[self.index]['id'])+ ": "+str(self.rq[self.index]['status']))
 
 

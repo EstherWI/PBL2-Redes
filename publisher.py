@@ -23,7 +23,7 @@ def connect_mqtt():
 
 def pacienteGrave(contador, method) -> dict:
     data ={
-        "id":str(contador),
+        "id":contador,
         "saturacao":random.randint(0, 95),
         "temp":round(random.uniform(37.5, 42), 1),
         "freq":random.randint(100,140),
@@ -36,7 +36,7 @@ def pacienteGrave(contador, method) -> dict:
 
 def pacienteLeve(contador, method) ->dict:
     data = {
-        "id":str(contador),
+        "id":contador,
         "saturacao":random.randint(96, 100),
         "temp":round(random.uniform(35.5, 37.4), 1),
         "freq":random.randint(60,99),
@@ -53,9 +53,9 @@ def publish(client):
         time.sleep(1)
         choice = random.randint(0,1)
         if choice == 0:
-            msg = pacienteGrave(client._client_id, "put")
+            msg = pacienteGrave(int(client._client_id), "put")
         else:
-            msg = pacienteLeve(client._client_id, "put")
+            msg = pacienteLeve(int(client._client_id), "put")
 
         result = client.publish(topic, json.dumps(msg))
 
@@ -73,9 +73,9 @@ def main():
     client.loop_start()
     choice = random.randint(0,1)
     if choice == 0:
-        msg = pacienteGrave(client._client_id, "post")
+        msg = pacienteGrave(int(client._client_id), "post")
     else:
-        msg = pacienteLeve(client._client_id, "post")
+        msg = pacienteLeve(int(client._client_id), "post")
     result = client.publish(topic, json.dumps(msg))
     # result: [0, 1]
     status = result[0]
