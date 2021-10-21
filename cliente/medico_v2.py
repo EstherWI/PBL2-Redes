@@ -184,10 +184,10 @@ class Ui_MainWindow(object):
         self.listWidget_pacientes.addItem(item)
         self.label_frequencia.setText(str(self.rq[self.index]['freq']))
         self.label_pressao.setText(str(self.rq[self.index]['pressao1']) + 'x' + str(self.rq[self.index]['pressao2']))
-        self.label_saturacao.setText(str(self.rq[self.index]['resp']))
+        self.label_saturacao.setText(str(self.rq[self.index]['saturacao']))
         self.label_temperatura.setText(str(self.rq[self.index]['temp']))
-        self.id = self.rq[self.index]['cpf']
-        self.label_nomePaciente.setText("    "+ str(self.rq[self.index]['nome'])+ ": "+str(self.rq[self.index]['status']))
+        self.id = self.rq[self.index]['id']
+        self.label_nomePaciente.setText("    "+ str(self.rq[self.index]['id'])+ ": "+str(self.rq[self.index]['status']))
 
 
 
@@ -203,7 +203,7 @@ class MyThread(QtCore.QThread):
             resp = ui.listar_pacientes()
             time.sleep(1)
             for p in range(len(resp)):
-                self.ard_signal.emit(resp[p]['nome'])
+                self.ard_signal.emit(resp[p]['id'])
 
 if __name__ == "__main__":
     import sys

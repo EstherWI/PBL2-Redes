@@ -34,6 +34,7 @@ def subscribe(client: paho.mqtt.client):
         if data['method'] == "post":
             requests.post(url=f'https://connect-covid.herokuapp.com/patient', json=data)
         else:
+            print("teste")
             requests.put(url=f'https://connect-covid.herokuapp.com/patient/' + data['id'], json=data)
         print(f"Recebeu`{msg.payload.decode()}` from `{msg.topic}` topic")
 
