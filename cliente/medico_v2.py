@@ -180,7 +180,7 @@ class Ui_MainWindow(object):
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.NoBrush)
         item.setForeground(brush)
-        item.setText(_translate("MainWindow", signal))
+        item.setText(_translate("MainWindow", str(signal)))
         self.listWidget_pacientes.addItem(item)
         self.label_frequencia.setText(str(self.rq[self.index]['freq']))
         self.label_pressao.setText(str(self.rq[self.index]['pressao1']) + 'x' + str(self.rq[self.index]['pressao2']))
@@ -192,7 +192,7 @@ class Ui_MainWindow(object):
 
 
 class MyThread(QtCore.QThread):
-    ard_signal = QtCore.pyqtSignal(str)
+    ard_signal = QtCore.pyqtSignal(int)
     
     def __init__(self):
         QtCore.QThread.__init__(self)
