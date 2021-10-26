@@ -203,7 +203,7 @@ class MyThread(QtCore.QThread):
             ui.listWidget_pacientes.clear()
             resp = ui.listar_pacientes()
             time.sleep(1)
-            for p in range(len(resp)):
+            for p in range(ui.spinBox.value()):
                 self.ard_signal.emit(resp[p]['id'])
 
 if __name__ == "__main__":
