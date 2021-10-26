@@ -163,7 +163,7 @@ class Ui_MainWindow(object):
 
     def listar_pacientes(self) -> dict:
         self.resp = requests.get(url=f'{heroku}/patients').json()
-        self.rq = sorted(self.resp, key=lambda k: k['status']) 
+        self.rq = sorted(self.resp, key=lambda k: k['status'], reverse=True) 
         return self.rq
 
     def update(self, signal):
