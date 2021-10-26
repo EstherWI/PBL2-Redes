@@ -162,8 +162,8 @@ class Ui_MainWindow(object):
         self.thread_start.start()
 
     def listar_pacientes(self) -> dict:
-        resp = requests.get(url=f'{heroku}/patients').json()
-        self.rq = sorted(resp, key=lambda k: k['status']) 
+        self.resp = requests.get(url=f'{heroku}/patients').json()
+        self.rq = sorted(self.resp, key=lambda k: k['status']) 
         return self.rq
 
     def update(self, signal):
@@ -188,7 +188,7 @@ class Ui_MainWindow(object):
         self.label_temperatura.setText(str(self.rq[self.index]['temp']))
         self.id = self.rq[self.index]['id']
         print(self.rq[self.index])
-        self.label_nomePaciente.setText("    "+ str(self.rq[self.index]['id'])+ ": "+str(self.rq[self.index]['status']))
+        self.label_nomePaciente.setText("    "+ str(self.rq[self.index]['id']))
 
 
 
@@ -203,6 +203,7 @@ class MyThread(QtCore.QThread):
             ui.listWidget_pacientes.clear()
             resp = ui.listar_pacientes()
             time.sleep(1)
+            ui.spinBox.setMaximum(len(resp))
             for p in range(ui.spinBox.value()):
                 self.ard_signal.emit(resp[p]['id'])
 
