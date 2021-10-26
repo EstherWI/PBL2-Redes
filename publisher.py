@@ -21,6 +21,13 @@ def connect_mqtt():
     client.connect(host='broker.hivemq.com', port = 1883)
     return client
 
+def calculaGravidade(data)-> float:
+    gravidade = 0
+    gravidade += abs(data['temp'] - 36)
+    gravidade += abs(data['saturacao'] - 96)
+    gravidade += abs(data['freq'] - 70)
+    return round(gravidade,2)
+
 def pacienteGrave(contador, method) -> dict:
     data ={
         "id":contador,
@@ -29,9 +36,10 @@ def pacienteGrave(contador, method) -> dict:
         "freq":random.randint(100,140),
         "pressao1":random.randint(140,220),
         "pressao2":random.randint(85,100),
-        "status":"Grave",
+        "status":0,
         "method": method
     }
+    data['status'] = calculaGravidade(data)
     return data
 
 def pacienteLeve(contador, method) ->dict:
@@ -42,9 +50,10 @@ def pacienteLeve(contador, method) ->dict:
         "freq":random.randint(60,99),
         "pressao1":random.randint(110,130),
         "pressao2":random.randint(70,84),
-        "status":"Leve",
+        "status":0,
         "method":method
     }
+    data['status'] = calculaGravidade(data)
     return data
 
 def publish(client):
