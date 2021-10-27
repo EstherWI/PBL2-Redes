@@ -18,7 +18,7 @@ def connect_mqtt():
 
     client=paho.mqtt.client.Client(client_id=str(random.randint(0, 95)),clean_session=False)
     client.on_connect = on_connect
-    client.connect(host='broker.hivemq.com', port = 1883)
+    client.connect(host='localhost', port = 1883)
     return client
 
 def calculaGravidade(data)-> float:

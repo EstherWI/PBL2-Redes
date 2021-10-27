@@ -1,9 +1,7 @@
 import json
 import random
 import requests
-
 import paho.mqtt.client
-import time
 from main import CrudPaciente
 
 host = 'broker.hivemq.com'
@@ -29,14 +27,15 @@ def connect_mqtt() -> paho.mqtt.client:
 
 def subscribe(client: paho.mqtt.client):
     def on_message(client, userdata, msg):
-        data = json.loads(str(msg.payload.decode("utf-8")))
-        if data['method'] == "post":
-            requests.post(
-                url=f'https://connect-covid.herokuapp.com/patient', json=data)
-        else:
-            requests.put(
-                url=f'https://connect-covid.herokuapp.com/patient/' + str(data['id']), json=data)
-        print(f"Recebeu`{msg.payload.decode()}` from `{msg.topic}` topic")
+        print(msg.payload.decode("utf-8"))
+        # data = json.loads(msg)
+        # if data['method'] == "post":
+        #     requests.post(
+        #         url=f'https://connect-covid.herokuapp.com/patient', json=data)
+        # else:
+        #     requests.put(
+        #         url=f'https://connect-covid.herokuapp.com/patient/' + str(data['id']), json=data)
+        # print(f"Recebeu`{msg.payload.decode()}` from `{msg.topic}` topic")
 
     client.subscribe(topic)
     client.on_message = on_message
