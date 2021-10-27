@@ -1,8 +1,9 @@
 import json
-import random, time
+import random, time,threading
+
 import paho.mqtt.client
 from main import CrudPaciente
-from pub import Pub
+
 
 host = 'localhost'
 port = 1883
@@ -49,12 +50,11 @@ def subscribe(client: paho.mqtt.client, client_broker: paho.mqtt.client):
     client.on_message = on_message
 
 
+
 def run():
     client = connect_mqtt()
-    #client_broker = connect_broker()
-    subscribe(client)
-    #pub = Pub()
-    client.loop_forever()
+    client_broker = connect_broker()
+    subscribe(client, client_broker)
 
 
 if __name__ == '__main__':
