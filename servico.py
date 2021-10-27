@@ -2,12 +2,12 @@ import json
 import random
 import requests
 import paho.mqtt.client
-from main import CrudPaciente
+
 
 host = 'broker.hivemq.com'
 port = 1883
 topic = "paciente_broker"
-api = CrudPaciente()
+
 # generate client ID with pub prefix randomly
 client_id = f'python-mqtt-{random.randint(0, 100)}'
 
