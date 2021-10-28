@@ -9,9 +9,9 @@ host = 'localhost'
 port = 1883
 topic = "paciente_pbl"
 topic2 = "paciente_broker"
+lista = []
 
-lista = [] 
-ordenada = []
+
 # generate client ID with pub prefix randomly
 client_id = f'python-mqtt-{random.randint(0, 100)}'
 
@@ -41,16 +41,16 @@ def connect_broker() -> paho.mqtt.client:
     return client
 
 
-        
 def subscribe(client: paho.mqtt.client, client_broker: paho.mqtt.client):
-    def on_message(self,client, userdata, message):
-        self.lista.append(str(message.payload.decode("utf-8")))
-        # print("received message =",str(message.payload.decode("utf-8")))
-
+    def on_message(client, userdata, message)->list:
+        lista.append(str(message.payload.decode("utf-8")))
+        time.sleep(1.5)
+        client_broker.publish(topic2, str(lista))
+        #print("received message =",str(message.payload.decode("utf-8")))
     client.subscribe(topic)
     client.on_message = on_message
-    time.sleep(1.5)
-    client_broker.publish(topic2, json.dumps(lista))
+
+
 
 
 def run():
