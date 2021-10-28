@@ -45,7 +45,7 @@ def subscribe(client: paho.mqtt.client, client_broker: paho.mqtt.client):
     def on_message(client, userdata, message)->list:
         lista.append(str(message.payload.decode("utf-8")))
         time.sleep(1.5)
-        client_broker.publish(topic2, str(lista))
+        client_broker.publish(topic2, message.payload.decode("utf-8"))
         #print("received message =",str(message.payload.decode("utf-8")))
     client.subscribe(topic)
     client.on_message = on_message
