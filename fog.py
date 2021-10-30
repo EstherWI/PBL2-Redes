@@ -45,10 +45,9 @@ def connect_broker() -> paho.mqtt.client:
 def subscribe(client: paho.mqtt.client, client_broker: paho.mqtt.client):
     def on_message(client, userdata, message)->list:
         data = json.loads(str(message.payload.decode("utf-8")))
-        if data['method'] == "put":
-            index = next((i for i, item in enumerate(lista) if item['id'] == data['id']), -1) 
-            if index != -1:
-                lista[index] = data
+        index = next((i for i, item in enumerate(lista) if item['id'] == data['id']), -1) 
+        if index != -1:
+            lista[index] = data
         else:
             lista.append(data)
         ordenada = sorted(lista, key=lambda k: k['status'], reverse=True) 

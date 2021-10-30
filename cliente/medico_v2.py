@@ -180,7 +180,7 @@ class Ui_MainWindow(object):
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.NoBrush)
         item.setForeground(brush)
-        item.setText(_translate("MainWindow", str(signal)))
+        item.setText(_translate("MainWindow", signal))
         self.listWidget_pacientes.addItem(item)
         self.label_frequencia.setText(str(self.rq[self.index]['freq']))
         self.label_pressao.setText(str(self.rq[self.index]['pressao1']) + 'x' + str(self.rq[self.index]['pressao2']))
@@ -188,12 +188,12 @@ class Ui_MainWindow(object):
         self.label_temperatura.setText(str(self.rq[self.index]['temp']))
         self.id = self.rq[self.index]['id']
         print(self.rq[self.index])
-        self.label_nomePaciente.setText("    "+ str(self.rq[self.index]['id']))
+        self.label_nomePaciente.setText(str(self.rq[self.index]['nome']))
 
 
 
 class MyThread(QtCore.QThread):
-    ard_signal = QtCore.pyqtSignal(int)
+    ard_signal = QtCore.pyqtSignal(str)
     
     def __init__(self):
         QtCore.QThread.__init__(self)
@@ -205,7 +205,7 @@ class MyThread(QtCore.QThread):
             time.sleep(1)
             ui.spinBox.setMaximum(len(resp))
             for p in range(ui.spinBox.value()):
-                self.ard_signal.emit(resp[p]['id'])
+                self.ard_signal.emit(resp[p]['nome'])
 
 if __name__ == "__main__":
     import sys

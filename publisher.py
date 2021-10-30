@@ -61,7 +61,7 @@ def pacienteLeve(contador, method) ->dict:
 def publish(client):
     msg_count = 0
     while True:
-        time.sleep(2.5)
+        time.sleep(1)
         choice = random.randint(0,1)
         if choice == 0:
             msg = pacienteGrave(int(client._client_id), "put")
