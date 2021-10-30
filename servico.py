@@ -27,16 +27,15 @@ def connect_mqtt() -> paho.mqtt.client:
 
 def subscribe(client: paho.mqtt.client):
     def on_message(client, userdata, msg):
-        print(msg.payload.decode("utf-8"))
-        data = json.loads(str(msg.payload.decode("utf-8")))
-        if data['method'] == "post":
-            requests.post(
-                url=f'https://connect-covid.herokuapp.com/patient', json=data)
-        else:
-            requests.put(
-                url=f'https://connect-covid.herokuapp.com/patient/' + str(data['id']), json=data)
-        print(f"Recebeu`{msg.payload.decode()}` from `{msg.topic}` topic")
-
+        data = eval(json.loads(json.dumps(str(msg.payload.decode("utf-8")))))
+        ordenada = sorted(data, key=lambda k: k['status'], reverse=True) 
+        for p in ordenada:
+            if p['method'] == "post":
+                requests.post(
+                url=f'https://connect-covid.herokuapp.com/patient', json=p)
+            else:
+                requests.put(
+                    url=f'https://connect-covid.herokuapp.com/patient/' + str(p['id']), json=p)
     client.subscribe(topic)
     client.on_message = on_message
 

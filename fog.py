@@ -53,7 +53,7 @@ def subscribe(client: paho.mqtt.client, client_broker: paho.mqtt.client):
             lista.append(data)
         ordenada = sorted(lista, key=lambda k: k['status'], reverse=True) 
         time.sleep(1.5)
-        client_broker.publish(topic2, message.payload.decode("utf-8"))
+        client_broker.publish(topic2, str(ordenada))
     client.subscribe(topic)
     client.on_message = on_message
 
