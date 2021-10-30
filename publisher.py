@@ -1,4 +1,4 @@
-import paho.mqtt.client, time, json, random
+import paho.mqtt.client, time, json, random, names
 
 topic = "paciente_pbl"
 
@@ -30,6 +30,7 @@ def calculaGravidade(data)-> float:
 
 def pacienteGrave(contador, method) -> dict:
     data ={
+        "nome": names.get_full_name(),
         "id":contador,
         "saturacao":random.randint(0, 95),
         "temp":round(random.uniform(37.5, 42), 1),
@@ -44,6 +45,7 @@ def pacienteGrave(contador, method) -> dict:
 
 def pacienteLeve(contador, method) ->dict:
     data = {
+        "nome": names.get_full_name(),
         "id":contador,
         "saturacao":random.randint(96, 100),
         "temp":round(random.uniform(35.5, 37.4), 1),
