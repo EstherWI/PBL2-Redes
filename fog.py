@@ -1,6 +1,6 @@
 import json
 import random, time,threading
-
+from flask import Flask, request, jsonify
 import paho.mqtt.client
 
 
@@ -9,9 +9,10 @@ host = 'localhost'
 port = 1883
 topic = "paciente_pbl"
 topic2 = "paciente_broker"
-
-lista = [] 
+lista = []
 ordenada = []
+
+
 # generate client ID with pub prefix randomly
 client_id = f'python-mqtt-{random.randint(0, 100)}'
 
@@ -41,16 +42,20 @@ def connect_broker() -> paho.mqtt.client:
     return client
 
 
-        
 def subscribe(client: paho.mqtt.client, client_broker: paho.mqtt.client):
-    def on_message(self,client, userdata, message):
-        self.lista.append(str(message.payload.decode("utf-8")))
-        # print("received message =",str(message.payload.decode("utf-8")))
-
+    def on_message(client, userdata, message)->list:
+        data = json.loads(str(message.payload.decode("utf-8")))
+        if data['method'] == "put":
+            index = next((i for i, item in enumerate(lista) if item['id'] == data['id']), -1) 
+            if index != -1:
+                lista[index] = data
+        else:
+            lista.append(data)
+        ordenada = sorted(lista, key=lambda k: k['status'], reverse=True) 
+        time.sleep(1.5)
+        client_broker.publish(topic2, message.payload.decode("utf-8"))
     client.subscribe(topic)
     client.on_message = on_message
-    time.sleep(1.5)
-    client_broker.publish(topic2, json.dumps(lista))
 
 
 def run():
@@ -58,7 +63,6 @@ def run():
     client_broker = connect_broker()
     subscribe(client,client_broker)
     client.loop_forever()
-
 
 if __name__ == '__main__':
     run()
