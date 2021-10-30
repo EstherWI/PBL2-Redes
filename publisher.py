@@ -1,4 +1,4 @@
-import paho.mqtt.client, time, json, random
+import paho.mqtt.client, time, json, random, names
 
 topic = "paciente_pbl"
 
@@ -18,7 +18,7 @@ def connect_mqtt():
 
     client=paho.mqtt.client.Client(client_id=str(random.randint(0, 95)),clean_session=False)
     client.on_connect = on_connect
-    client.connect(host='broker.hivemq.com', port = 1883)
+    client.connect(host='localhost', port = 1883)
     return client
 
 def calculaGravidade(data)-> float:
@@ -30,6 +30,7 @@ def calculaGravidade(data)-> float:
 
 def pacienteGrave(contador, method) -> dict:
     data ={
+        "nome": names.get_full_name(),
         "id":contador,
         "saturacao":random.randint(0, 95),
         "temp":round(random.uniform(37.5, 42), 1),
@@ -44,6 +45,7 @@ def pacienteGrave(contador, method) -> dict:
 
 def pacienteLeve(contador, method) ->dict:
     data = {
+        "nome": names.get_full_name(),
         "id":contador,
         "saturacao":random.randint(96, 100),
         "temp":round(random.uniform(35.5, 37.4), 1),
@@ -59,7 +61,7 @@ def pacienteLeve(contador, method) ->dict:
 def publish(client):
     msg_count = 0
     while True:
-        time.sleep(1)
+        time.sleep(2.5)
         choice = random.randint(0,1)
         if choice == 0:
             msg = pacienteGrave(int(client._client_id), "put")

@@ -1,15 +1,13 @@
 import json
 import random
 import requests
-
 import paho.mqtt.client
-import time
-from main import CrudPaciente
+
 
 host = 'broker.hivemq.com'
 port = 1883
-topic = "paciente_pbl"
-api = CrudPaciente()
+topic = "paciente_broker"
+
 # generate client ID with pub prefix randomly
 client_id = f'python-mqtt-{random.randint(0, 100)}'
 
@@ -29,6 +27,7 @@ def connect_mqtt() -> paho.mqtt.client:
 
 def subscribe(client: paho.mqtt.client):
     def on_message(client, userdata, msg):
+        print(msg.payload.decode("utf-8"))
         data = json.loads(str(msg.payload.decode("utf-8")))
         if data['method'] == "post":
             requests.post(
