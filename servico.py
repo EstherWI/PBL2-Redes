@@ -29,13 +29,7 @@ def subscribe(client: paho.mqtt.client):
     def on_message(client, userdata, msg):
         data = eval(json.loads(json.dumps(str(msg.payload.decode("utf-8")))))
         ordenada = sorted(data, key=lambda k: k['status'], reverse=True) 
-        for p in ordenada:
-            if p['method'] == "post":
-                requests.post(
-                url=f'https://connect-covid.herokuapp.com/patient', json=p)
-            else:
-                requests.put(
-                    url=f'https://connect-covid.herokuapp.com/patient/' + str(p['id']), json=p)
+        requests.post(url=f'https://connect-covid.herokuapp.com/patients', json=ordenada)
     client.subscribe(topic)
     client.on_message = on_message
 

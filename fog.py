@@ -1,6 +1,5 @@
 import json
-import random, time,threading
-from flask import Flask, request, jsonify
+import random
 import paho.mqtt.client
 
 
