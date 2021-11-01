@@ -10,7 +10,7 @@ topic = "paciente_pbl"
 topic2 = "paciente_broker"
 lista = []
 ordenada = []
-
+n = 10
 
 # generate client ID with pub prefix randomly
 client_id = f'python-mqtt-{random.randint(0, 100)}'
@@ -50,10 +50,15 @@ def subscribe(client: paho.mqtt.client, client_broker: paho.mqtt.client):
         else:
             lista.append(data)
         ordenada = sorted(lista, key=lambda k: k['status'], reverse=True) 
-        client_broker.publish(topic2, str(ordenada))
+        client_broker.publish(topic2, str(ordenada[0:n]))
         print("received message =",str(message.payload.decode("utf-8")))
+    def on_message_HIVE(client, userdata, message)->list:
+        global n
+        n = str(message.payload.decode("utf-8"))
     client.subscribe(topic)
     client.on_message = on_message
+    client_broker.subscribe("/N")
+    client_broker.on_message = on_message_HIVE
 
 
 def run():
