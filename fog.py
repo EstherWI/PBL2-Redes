@@ -1,6 +1,9 @@
-import json
+import json, os
 import random
 import paho.mqtt.client
+from dotenv import load_dotenv
+
+load_dotenv()
 
 host = 'localhost'
 port = 1883
@@ -9,7 +12,6 @@ topic2 = "paciente_broker"
 lista = []
 ordenada = []
 n = 10
-fogs = 0
 
 # generate client ID with pub prefix randomly
 client_id = f'python-mqtt-{random.randint(0, 100)}'
@@ -33,7 +35,7 @@ def connect_broker() -> paho.mqtt.client:
         else:
             print("Failed to connect, return code %d\n", rc)
 
-    client = paho.mqtt.client.Client(client_id,clean_session=False, userdata="fog1")
+    client = paho.mqtt.client.Client(client_id,clean_session=False)
     client.on_connect = on_connect
     client.connect('broker.hivemq.com', port)
     return client
@@ -42,6 +44,8 @@ def connect_broker() -> paho.mqtt.client:
 def subscribe(client: paho.mqtt.client, client_broker: paho.mqtt.client):
     def on_message(client, userdata, message)->list:
         data = json.loads(str(message.payload.decode("utf-8")))
+        data['fog'] = os.getenv("FOG")
+        print(data)
         index = next((i for i, item in enumerate(lista) if item['id'] == data['id']), -1) 
         if index != -1:
             lista[index] = data
@@ -53,11 +57,6 @@ def subscribe(client: paho.mqtt.client, client_broker: paho.mqtt.client):
     def on_message_HIVE(client, userdata, message)->list:
         global n
         n = str(message.payload.decode("utf-8"))
-    def on_message_FOGS(client, userdata, message)->list:
-        global fogs
-        fogs = str(message.payload.decode("utf-8"))
-    client.subscribe("/Fogs")
-    client.on_message = on_message_FOGS
     client.subscribe(topic)
     client.on_message = on_message
     client_broker.subscribe("/N")
@@ -67,7 +66,6 @@ def subscribe(client: paho.mqtt.client, client_broker: paho.mqtt.client):
 def run():
     client = connect_mqtt()
     client_broker = connect_broker()
-    client_broker.publish("/Fogs", fogs+1)
     subscribe(client,client_broker)
     client.loop_forever()
 
