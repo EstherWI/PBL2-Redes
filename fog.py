@@ -53,7 +53,6 @@ def subscribe(client: paho.mqtt.client, client_broker: paho.mqtt.client):
             lista.append(data)
         ordenada = sorted(lista, key=lambda k: k['status'], reverse=True) 
         client_broker.publish(topic2, str(ordenada[0:n]))
-        print("received message =",str(message.payload.decode("utf-8")))
     def on_message_HIVE(client, userdata, message)->list:
         global n
         n = str(message.payload.decode("utf-8"))
