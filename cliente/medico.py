@@ -9,7 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-import requests, time
+import requests, time, json
 heroku = 'https://connect-covid.herokuapp.com'
 
 
@@ -180,8 +180,7 @@ class Ui_MainWindow(object):
         self.thread_start.start()
 
     def listar_pacientes(self) -> dict:
-        self.resp = requests.get(url=f'{heroku}/patients').json()
-        self.rq = sorted(self.resp, key=lambda k: k['status'], reverse=True) 
+        self.rq = requests.get(url=f'{heroku}/get/patients/{ui.spinBox.value()}').json()
         return self.rq
 
     def update(self, signal):
@@ -220,8 +219,7 @@ class MyThread(QtCore.QThread):
             ui.listWidget_pacientes.clear()
             resp = ui.listar_pacientes()
             time.sleep(1)
-            ui.spinBox.setMaximum(len(resp))
-            for p in range(ui.spinBox.value()):
+            for p in range(len(resp)):
                 self.ard_signal.emit(resp[p]['nome'])
 
 if __name__ == "__main__":
@@ -231,5 +229,6 @@ if __name__ == "__main__":
     ui = Ui_MainWindow()
     ui.index = 0
     ui.setupUi(MainWindow)
+    ui.spinBox.setValue(0)
     MainWindow.show()
     sys.exit(app.exec_())

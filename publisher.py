@@ -61,7 +61,7 @@ def pacienteLeve(contador, method, name) ->dict:
 def publish(client):
     msg_count = 0
     while True:
-        time.sleep(2)
+        time.sleep(5)
         choice = random.randint(0,1)
         if choice == 0:
             msg = pacienteGrave(int(client._client_id), "put", client._userdata)
@@ -82,19 +82,6 @@ def publish(client):
 def main():
     client = connect_mqtt()
     client.loop_start()
-    choice = random.randint(0,1)
-    if choice == 0:
-        msg = pacienteGrave(int(client._client_id), "post", client._userdata)
-    else:
-        msg = pacienteLeve(int(client._client_id), "post", client._userdata)
-    result = client.publish(topic, json.dumps(msg))
-    # result: [0, 1]
-    status = result[0]
-    if status == 0:
-        print(f"Send to topic `{topic}`")
-    else:
-        print(json.dumps(msg))
-        print(f"Failed to send message to topic {topic}")
     publish(client)
 
 if __name__ == '__main__':
