@@ -38,7 +38,7 @@ def pacienteGrave(contador, method, name) -> dict:
         "pressao1":random.randint(140,220),
         "pressao2":random.randint(85,100),
         "status":0,
-        "method": method
+        "fog": method
     }
     data['status'] = calculaGravidade(data)
     return data
@@ -53,7 +53,7 @@ def pacienteLeve(contador, method, name) ->dict:
         "pressao1":random.randint(110,130),
         "pressao2":random.randint(70,84),
         "status":0,
-        "method":method
+        "fog":method
     }
     data['status'] = calculaGravidade(data)
     return data
