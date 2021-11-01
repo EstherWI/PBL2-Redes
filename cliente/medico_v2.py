@@ -9,10 +9,6 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-import requests
-import time
-
-heroku = 'https://connect-covid.herokuapp.com'
 
 
 class Ui_MainWindow(object):
@@ -65,7 +61,7 @@ class Ui_MainWindow(object):
         self.label_saturacao.setAlignment(QtCore.Qt.AlignCenter)
         self.label_saturacao.setObjectName("label_saturacao")
         self.label_titulo_temperatura = QtWidgets.QLabel(self.centralwidget)
-        self.label_titulo_temperatura.setGeometry(QtCore.QRect(340, 90, 81, 16))
+        self.label_titulo_temperatura.setGeometry(QtCore.QRect(320, 90, 111, 16))
         font = QtGui.QFont()
         font.setPointSize(9)
         font.setBold(True)
@@ -75,7 +71,7 @@ class Ui_MainWindow(object):
 "background-color: rgb(0, 0, 127);")
         self.label_titulo_temperatura.setObjectName("label_titulo_temperatura")
         self.label_titulo_pressao = QtWidgets.QLabel(self.centralwidget)
-        self.label_titulo_pressao.setGeometry(QtCore.QRect(530, 90, 47, 13))
+        self.label_titulo_pressao.setGeometry(QtCore.QRect(500, 90, 101, 16))
         font = QtGui.QFont()
         font.setPointSize(9)
         font.setBold(True)
@@ -85,7 +81,7 @@ class Ui_MainWindow(object):
 "background-color: rgb(0, 0, 127);")
         self.label_titulo_pressao.setObjectName("label_titulo_pressao")
         self.label_titulo_freq = QtWidgets.QLabel(self.centralwidget)
-        self.label_titulo_freq.setGeometry(QtCore.QRect(350, 220, 71, 20))
+        self.label_titulo_freq.setGeometry(QtCore.QRect(320, 220, 111, 21))
         font = QtGui.QFont()
         font.setPointSize(9)
         font.setBold(True)
@@ -95,7 +91,7 @@ class Ui_MainWindow(object):
 "background-color: rgb(0, 0, 127);")
         self.label_titulo_freq.setObjectName("label_titulo_freq")
         self.label_titulo_saturacao = QtWidgets.QLabel(self.centralwidget)
-        self.label_titulo_saturacao.setGeometry(QtCore.QRect(530, 220, 61, 16))
+        self.label_titulo_saturacao.setGeometry(QtCore.QRect(500, 220, 111, 16))
         font = QtGui.QFont()
         font.setPointSize(9)
         font.setBold(True)
@@ -130,6 +126,27 @@ class Ui_MainWindow(object):
 "font: 75 9pt \"MS Shell Dlg 2\";\n"
 "color: rgb(255, 255, 255);")
         self.spinBox.setObjectName("spinBox")
+        self.label_set_gravidade = QtWidgets.QLabel(self.centralwidget)
+        self.label_set_gravidade.setGeometry(QtCore.QRect(500, 330, 81, 20))
+        font = QtGui.QFont()
+        font.setPointSize(9)
+        font.setBold(True)
+        font.setWeight(75)
+        self.label_set_gravidade.setFont(font)
+        self.label_set_gravidade.setStyleSheet("color: rgb(255, 255, 255);\n"
+"background-color: rgb(0, 0, 127);")
+        self.label_set_gravidade.setText("")
+        self.label_set_gravidade.setObjectName("label_set_gravidade")
+        self.label_nomeGravidade = QtWidgets.QLabel(self.centralwidget)
+        self.label_nomeGravidade.setGeometry(QtCore.QRect(380, 330, 121, 20))
+        font = QtGui.QFont()
+        font.setPointSize(9)
+        font.setBold(True)
+        font.setWeight(75)
+        self.label_nomeGravidade.setFont(font)
+        self.label_nomeGravidade.setStyleSheet("color: rgb(255, 255, 255);\n"
+"background-color: rgb(0, 0, 127);")
+        self.label_nomeGravidade.setObjectName("label_nomeGravidade")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 651, 21))
@@ -141,78 +158,24 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-        self.listWidget_pacientes.itemClicked.connect(self.listwidgetclicked)
-
-
-    def listwidgetclicked(self, item):
-       self.index = self.listWidget_pacientes.row(item)
-
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.label_titulo.setText(_translate("MainWindow", "Connect Covid"))
-        self.label_titulo_temperatura.setText(_translate("MainWindow", "Temperatura (°C)"))
+        self.label_titulo_temperatura.setText(_translate("MainWindow", "Temperatura (C°)"))
         self.label_titulo_pressao.setText(_translate("MainWindow", "Pressão (mmHg)"))
         self.label_titulo_freq.setText(_translate("MainWindow", "Frequencia (bpm)"))
         self.label_titulo_saturacao.setText(_translate("MainWindow", "Saturação (SpO2)"))
         self.label_titulo_2.setText(_translate("MainWindow", "Prioridade de atendimento"))
-        self.thread_start = MyThread()
-        self.thread_start.ard_signal.connect(self.update)        
-        self.thread_start.start()
+        self.label_nomeGravidade.setText(_translate("MainWindow", "         Gravidade "))
 
-    def listar_pacientes(self) -> dict:
-        self.resp = requests.get(url=f'{heroku}/patients').json()
-        self.rq = sorted(self.resp, key=lambda k: k['status'], reverse=True) 
-        return self.rq
-
-    def update(self, signal):
-        _translate = QtCore.QCoreApplication.translate
-        item = QtWidgets.QListWidgetItem()
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        font.setBold(True)
-        font.setWeight(75)
-        item.setFont(font)
-        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
-        brush.setStyle(QtCore.Qt.NoBrush)
-        item.setBackground(brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
-        brush.setStyle(QtCore.Qt.NoBrush)
-        item.setForeground(brush)
-        item.setText(_translate("MainWindow", signal))
-        self.listWidget_pacientes.addItem(item)
-        self.label_frequencia.setText(str(self.rq[self.index]['freq']))
-        self.label_pressao.setText(str(self.rq[self.index]['pressao1']) + 'x' + str(self.rq[self.index]['pressao2']))
-        self.label_saturacao.setText(str(self.rq[self.index]['saturacao']))
-        self.label_temperatura.setText(str(self.rq[self.index]['temp']))
-        self.id = self.rq[self.index]['id']
-        print(self.rq[self.index])
-        self.label_nomePaciente.setText(str(self.rq[self.index]['nome']))
-
-
-
-class MyThread(QtCore.QThread):
-    ard_signal = QtCore.pyqtSignal(str)
-    
-    def __init__(self):
-        QtCore.QThread.__init__(self)
-        
-    def run(self):
-        while 1:
-            ui.listWidget_pacientes.clear()
-            resp = ui.listar_pacientes()
-            time.sleep(1)
-            ui.spinBox.setMaximum(len(resp))
-            for p in range(ui.spinBox.value()):
-                self.ard_signal.emit(resp[p]['nome'])
 
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
-    ui.index = 0
     ui.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())
