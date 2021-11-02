@@ -1,9 +1,9 @@
-import json
-import random, time,threading
-from flask import Flask, request, jsonify
+import json, os
+import random
 import paho.mqtt.client
+from dotenv import load_dotenv
 
-
+load_dotenv()
 
 host = 'localhost'
 port = 1883
@@ -11,11 +11,10 @@ topic = "paciente_pbl"
 topic2 = "paciente_broker"
 lista = []
 ordenada = []
-
+n = 10
 
 # generate client ID with pub prefix randomly
 client_id = f'python-mqtt-{random.randint(0, 100)}'
-
 
 def connect_mqtt() -> paho.mqtt.client:
     def on_connect(client, userdata, flags, rc):
@@ -36,7 +35,7 @@ def connect_broker() -> paho.mqtt.client:
         else:
             print("Failed to connect, return code %d\n", rc)
 
-    client = paho.mqtt.client.Client(client_id)
+    client = paho.mqtt.client.Client(client_id,clean_session=False)
     client.on_connect = on_connect
     client.connect('broker.hivemq.com', port)
     return client
@@ -45,18 +44,22 @@ def connect_broker() -> paho.mqtt.client:
 def subscribe(client: paho.mqtt.client, client_broker: paho.mqtt.client):
     def on_message(client, userdata, message)->list:
         data = json.loads(str(message.payload.decode("utf-8")))
-        if data['method'] == "put":
-            index = next((i for i, item in enumerate(lista) if item['id'] == data['id']), -1) 
-            if index != -1:
-                lista[index] = data
+        data['fog'] = os.getenv("FOG")
+        print(data)
+        index = next((i for i, item in enumerate(lista) if item['id'] == data['id']), -1) 
+        if index != -1:
+            lista[index] = data
         else:
             lista.append(data)
         ordenada = sorted(lista, key=lambda k: k['status'], reverse=True) 
-        time.sleep(1.5)
-        client_broker.publish(topic2, message.payload.decode("utf-8"))
-        print("received message =",str(message.payload.decode("utf-8")))
+        client_broker.publish(topic2, str(ordenada[0:n]))
+    def on_message_HIVE(client, userdata, message)->list:
+        global n
+        n = str(message.payload.decode("utf-8"))
     client.subscribe(topic)
     client.on_message = on_message
+    client_broker.subscribe("/N")
+    client_broker.on_message = on_message_HIVE
 
 
 def run():
