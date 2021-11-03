@@ -191,7 +191,7 @@ class Ui_MainWindow(object):
         self.thread_start.start()
 
     def get_paciente(self) -> dict:
-        return requests.get(url=f'{heroku}/patient/{self.paciente["id"]}')
+        return requests.get(url=f'{heroku}/patient/{self.paciente["id"]}').json()
 
 
     def listar_pacientes(self) -> dict:
@@ -229,12 +229,10 @@ class MyThread(QtCore.QThread):
             ui.listWidget_pacientes.clear()
             resp = ui.listar_pacientes()
             paciente = ui.get_paciente()
-            time.sleep(1)
             for p in range(len(resp)):
                 self.ard_signal.emit(resp[p])
-                # if(paciente != None):
-                #     print(paciente)
-                #     self.update_signal.emit(paciente)
+                if(paciente != None):
+                     self.update_signal.emit(paciente)
 
 if __name__ == "__main__":
     import sys
@@ -242,7 +240,7 @@ if __name__ == "__main__":
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
     ui.index = 0
-    ui.paciente = {'id':"0"}
+    ui.paciente = {'id':0}
     ui.setupUi(MainWindow)
     ui.spinBox.setValue(0)
     MainWindow.show()
