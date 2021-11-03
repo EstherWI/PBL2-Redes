@@ -1,9 +1,13 @@
 import json, os
 import random
+import requests
 import paho.mqtt.client
 from dotenv import load_dotenv
 
 load_dotenv()
+
+import threading
+
 
 host = 'localhost'
 port = 1883
@@ -11,7 +15,9 @@ topic = "paciente_pbl"
 topic2 = "paciente_broker"
 lista = []
 ordenada = []
-n = 10
+paciente = None
+heroku = 'https://connect-covid.herokuapp.com'
+
 
 # generate client ID with pub prefix randomly
 client_id = f'python-mqtt-{random.randint(0, 100)}'
@@ -44,30 +50,31 @@ def connect_broker() -> paho.mqtt.client:
 def subscribe(client: paho.mqtt.client, client_broker: paho.mqtt.client):
     def on_message(client, userdata, message)->list:
         data = json.loads(str(message.payload.decode("utf-8")))
+        idSelect = requests.get(url=f'{heroku}/getId').json()
+        n = requests.get(url=f'{heroku}/getN').json()
         data['fog'] = os.getenv("FOG")
-        print(data)
         index = next((i for i, item in enumerate(lista) if item['id'] == data['id']), -1) 
         if index != -1:
             lista[index] = data
         else:
             lista.append(data)
+        index = next((i for i, item in enumerate(lista) if item['id'] == idSelect), -1) 
+        if index != -1:
+            client_broker.publish("MonitorarPaciente",str(lista[index]))
         ordenada = sorted(lista, key=lambda k: k['status'], reverse=True) 
-        client_broker.publish(topic2, str(ordenada[0:n]))
-        print("received message =",str(message.payload.decode("utf-8")))
-    def on_message_HIVE(client, userdata, message)->list:
-        global n
-        n = str(message.payload.decode("utf-8"))
+        result = client_broker.publish(topic2, str(ordenada[0:n]))
+        status = result[0]
+        if status != 0:
+            print(f"Failed to send message to topic {topic2}")
     client.subscribe(topic)
     client.on_message = on_message
-    client_broker.subscribe("/N")
-    client_broker.on_message = on_message_HIVE
-
 
 def run():
     client = connect_mqtt()
     client_broker = connect_broker()
     subscribe(client,client_broker)
     client.loop_forever()
+
 
 if __name__ == '__main__':
     run()

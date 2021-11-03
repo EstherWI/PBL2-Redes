@@ -9,8 +9,9 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-import requests, time, json
+import requests, time
 heroku = 'https://connect-covid.herokuapp.com'
+local = 'http://192.168.1.4:5000'
 
 
 class Ui_MainWindow(object):
@@ -163,7 +164,16 @@ class Ui_MainWindow(object):
         self.listWidget_pacientes.itemClicked.connect(self.listwidgetclicked)
 
     def listwidgetclicked(self, item):
-       self.index = self.listWidget_pacientes.row(item)
+        self.paciente = item.data(QtCore.Qt.UserRole)
+
+    def updatePatient(self, signal):
+        self.label_frequencia.setText(str(signal['freq']))
+        self.label_pressao.setText(str(signal['pressao1']) + 'x' + str(signal['pressao2']))
+        self.label_saturacao.setText(str(signal['saturacao']))
+        self.label_temperatura.setText(str(signal['temp']))
+        self.label_set_gravidade.setText(str(signal['status']))
+        self.id = signal['id']
+        self.label_nomePaciente.setText(str(signal['nome']))
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -176,8 +186,13 @@ class Ui_MainWindow(object):
         self.label_titulo_2.setText(_translate("MainWindow", "Prioridade de atendimento"))
         self.label_nomeGravidade.setText(_translate("MainWindow", "         Gravidade "))
         self.thread_start = MyThread()
-        self.thread_start.ard_signal.connect(self.update)        
+        self.thread_start.ard_signal.connect(self.update)      
+        self.thread_start.update_signal.connect(self.updatePatient)          
         self.thread_start.start()
+
+    def get_paciente(self) -> dict:
+        return requests.get(url=f'{heroku}/patient/{self.paciente["id"]}')
+
 
     def listar_pacientes(self) -> dict:
         self.rq = requests.get(url=f'{heroku}/get/patients/{ui.spinBox.value()}').json()
@@ -197,19 +212,14 @@ class Ui_MainWindow(object):
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.NoBrush)
         item.setForeground(brush)
-        item.setText(_translate("MainWindow", signal))
+        item.setText(_translate("MainWindow", signal['nome']))
+        item.setData(QtCore.Qt.UserRole, signal) 
         self.listWidget_pacientes.addItem(item)
-        self.label_frequencia.setText(str(self.rq[self.index]['freq']))
-        self.label_pressao.setText(str(self.rq[self.index]['pressao1']) + 'x' + str(self.rq[self.index]['pressao2']))
-        self.label_saturacao.setText(str(self.rq[self.index]['saturacao']))
-        self.label_temperatura.setText(str(self.rq[self.index]['temp']))
-        self.label_set_gravidade.setText(str(self.rq[self.index]['status']))
-        self.id = self.rq[self.index]['id']
-        print(self.rq[self.index])
-        self.label_nomePaciente.setText(str(self.rq[self.index]['nome']))
+        
 
 class MyThread(QtCore.QThread):
-    ard_signal = QtCore.pyqtSignal(str)
+    ard_signal = QtCore.pyqtSignal(dict)
+    update_signal = QtCore.pyqtSignal(dict)
     
     def __init__(self):
         QtCore.QThread.__init__(self)
@@ -218,9 +228,13 @@ class MyThread(QtCore.QThread):
         while 1:
             ui.listWidget_pacientes.clear()
             resp = ui.listar_pacientes()
+            paciente = ui.get_paciente()
             time.sleep(1)
             for p in range(len(resp)):
-                self.ard_signal.emit(resp[p]['nome'])
+                self.ard_signal.emit(resp[p])
+                # if(paciente != None):
+                #     print(paciente)
+                #     self.update_signal.emit(paciente)
 
 if __name__ == "__main__":
     import sys
@@ -228,6 +242,7 @@ if __name__ == "__main__":
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
     ui.index = 0
+    ui.paciente = {'id':"0"}
     ui.setupUi(MainWindow)
     ui.spinBox.setValue(0)
     MainWindow.show()
