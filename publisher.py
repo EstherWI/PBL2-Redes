@@ -1,4 +1,9 @@
 import paho.mqtt.client, time, json, random, names
+import threading
+
+threads = []
+maxNrOfThreads = 10
+
 
 topic = "paciente_pbl"
 
@@ -75,14 +80,24 @@ def publish(client):
         if status == 0:
             print(f"Send to topic `{topic}`")
         else:
-            print(json.dumps(msg))
             print(f"Failed to send message to topic {topic}")
         msg_count += 1
 
-def main():
+def worker():
     client = connect_mqtt()
     client.loop_start()
     publish(client)
+
+def main():
+    for _ in range(maxNrOfThreads):
+        thr = threading.Thread(target=worker)
+        threads.append(thr)
+        thr.setDaemon(True)
+        thr.start()
+
+    for thread in threads:
+        thread.join()
+        main()
 
 if __name__ == '__main__':
     main()

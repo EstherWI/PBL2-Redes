@@ -1,5 +1,6 @@
 import json, os
 import random
+import time
 import paho.mqtt.client
 from dotenv import load_dotenv
 
@@ -11,6 +12,7 @@ topic = "paciente_pbl"
 topic2 = "paciente_broker"
 lista = []
 ordenada = []
+paciente = None
 n = 10
 
 # generate client ID with pub prefix randomly
@@ -45,21 +47,28 @@ def subscribe(client: paho.mqtt.client, client_broker: paho.mqtt.client):
     def on_message(client, userdata, message)->list:
         data = json.loads(str(message.payload.decode("utf-8")))
         data['fog'] = os.getenv("FOG")
-        print(data)
         index = next((i for i, item in enumerate(lista) if item['id'] == data['id']), -1) 
         if index != -1:
             lista[index] = data
         else:
             lista.append(data)
         ordenada = sorted(lista, key=lambda k: k['status'], reverse=True) 
-        client_broker.publish(topic2, str(ordenada[0:n]))
+        print(n)
+        result = client_broker.publish(topic2, str(ordenada[0:n]))
+        status = result[0]
+        if status != 0:
+            print(f"Failed to send message to topic {topic2}")
     def on_message_HIVE(client, userdata, message)->list:
+        if(message.topic == "PacienteSelect"):
+            print("Monitoramento")
         global n
         n = str(message.payload.decode("utf-8"))
+        print(message)
     client.subscribe(topic)
     client.on_message = on_message
-    client_broker.subscribe("/N")
+    client_broker.subscribe([("N",1), ("PacienteSelect",1)])
     client_broker.on_message = on_message_HIVE
+
 
 
 def run():
@@ -67,6 +76,7 @@ def run():
     client_broker = connect_broker()
     subscribe(client,client_broker)
     client.loop_forever()
+
 
 if __name__ == '__main__':
     run()
