@@ -14,25 +14,22 @@
  '''
 
 
-
-
-
 import paho.mqtt.client, time, json, random, names
 import threading, os
+
+#Este arquivo é responsável por realizar a publicação e atualização de X pacientes no broker local.
+#Sendo estes pacientes gerados de modo aleatório, em conjunto com seus dados de sinais vitais randomicamente.
+#É estabelecido também um cálculo de gravidade de acordo com seus parâmetros de sinais vitais
+#para posteriormente na Fog ordená-los de acordo com os N mais graves.
+
 
 threads = []
 result = []
 maxNrOfThreads = 50
 topic = "paciente_pbl"
 
-
-# O retorno de chamada para quando uma mensagem publish é recebida do servidor.
-def on_message(mosq, obj, msg):
-    print(msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
-
-def on_publish(mosq, obj, mid):
-    print("mid: " + str(mid))
-
+#Esta função é responsável pela conexão de um cliente no broker público, contando com uma verficação de ID gerado
+#em um determinado intervalo randomico,para não haver conflito entre os clientes do publisher e subscriber.
 def connect_mqtt():
     def on_connect(client, userdata, flags, rc):
         if rc == 0:
@@ -50,12 +47,15 @@ def connect_mqtt():
     client.connect(host='localhost', port = 1883)
     return client
 
+#Função que realiza o cálculo de gravidade do paciente, de acordo com alguns padrões de sinais vitais estabelecidos.
 def calculaGravidade(data)-> float:
     gravidade = 0
     gravidade += abs(data['temp'] - 36)
     gravidade += abs(data['saturacao'] - 96)
     gravidade += abs(data['freq'] - 70)
     return round(gravidade,2)
+
+#Função que gera um paciente grave quando escolhida. Sendo os parâmetros graves estabelecidos em determinado intervalo randomico.
 
 def pacienteGrave(contador, fog, name) -> dict:
     data ={
@@ -72,6 +72,7 @@ def pacienteGrave(contador, fog, name) -> dict:
     data['status'] = calculaGravidade(data)
     return data
 
+#Função que gera um paciente leve , quando escolhida. Com intervalos de parãmetros já estabelecidos e gerados randomicamente.
 def pacienteLeve(contador, fog, name) ->dict:
     data = {
         "nome": name,
@@ -87,6 +88,8 @@ def pacienteLeve(contador, fog, name) ->dict:
     data['status'] = calculaGravidade(data)
     return data
 
+#Função responsável por escolher de maneira randomica o tipo de paciente a ser gerado(grave ou leve)
+#com um time de 3 segundos . E publica no broker local, para a Fog obtê-los.
 def publish(client):
     msg_count = 0
     while True:
@@ -107,11 +110,13 @@ def publish(client):
             print(f"Failed to send message to topic {topic}")
         msg_count += 1
 
+#inicializa a conexão do cliente publisher
 def worker():
     client = connect_mqtt()
     client.loop_start()
     publish(client)
 
+#Thread responsável pela geração de um número X de pacientes a cada execução do arquivo publisher.py
 def main():
     for _ in range(maxNrOfThreads):
         thr = threading.Thread(target=worker)
