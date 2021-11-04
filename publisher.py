@@ -38,7 +38,7 @@ def calculaGravidade(data)-> float:
     gravidade += abs(data['freq'] - 70)
     return round(gravidade,2)
 
-def pacienteGrave(contador, method, name) -> dict:
+def pacienteGrave(contador, fog, name) -> dict:
     data ={
         "nome": name,
         "id": contador,
@@ -48,12 +48,12 @@ def pacienteGrave(contador, method, name) -> dict:
         "pressao1":random.randint(140,220),
         "pressao2":random.randint(85,100),
         "status":0,
-        "fog": method
+        "fog": fog
     }
     data['status'] = calculaGravidade(data)
     return data
 
-def pacienteLeve(contador, method, name) ->dict:
+def pacienteLeve(contador, fog, name) ->dict:
     data = {
         "nome": name,
         "id":contador,
@@ -63,7 +63,7 @@ def pacienteLeve(contador, method, name) ->dict:
         "pressao1":random.randint(110,130),
         "pressao2":random.randint(70,84),
         "status":0,
-        "fog":method
+        "fog":fog
     }
     data['status'] = calculaGravidade(data)
     return data
@@ -74,9 +74,9 @@ def publish(client):
         time.sleep(3)
         choice = random.randint(0,1)
         if choice == 0:
-            msg = pacienteGrave(int(client._client_id), "put", client._userdata)
+            msg = pacienteGrave(int(client._client_id), "", client._userdata)
         else:
-            msg = pacienteLeve(int(client._client_id), "put", client._userdata)
+            msg = pacienteLeve(int(client._client_id), "", client._userdata)
 
         result = client.publish(topic, json.dumps(msg))
 
