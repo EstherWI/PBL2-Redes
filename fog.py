@@ -1,5 +1,4 @@
 import json, os
-import random
 import requests
 import paho.mqtt.client
 from dotenv import load_dotenv
@@ -17,9 +16,6 @@ paciente = None
 heroku = 'https://connect-covid.herokuapp.com'
 
 
-# generate client ID with pub prefix randomly
-#client_id = f'python-mqtt-{random.randint(0, 100)}'
-
 def connect_mqtt() -> paho.mqtt.client:
     def on_connect(client, userdata, flags, rc):
         if rc == 0:
@@ -34,7 +30,6 @@ def connect_mqtt() -> paho.mqtt.client:
 
 def connect_broker() -> paho.mqtt.client:
     def on_connect_broker(client, userdata, flags, rc):
-        print(rc)
         if rc == 0:
             print("Connecto ao HiveMQ!")
         else:
@@ -52,7 +47,6 @@ def subscribe(client: paho.mqtt.client, client_broker: paho.mqtt.client):
         print(data)
         idSelect = requests.get(url=f'{heroku}/getId').json()
         n = requests.get(url=f'{heroku}/getN').json()
-        print(idSelect)
         data['fog'] = os.getenv("FOG")
         index = next((i for i, item in enumerate(lista) if item['id'] == data['id']), -1) 
         if index != -1:
@@ -61,12 +55,11 @@ def subscribe(client: paho.mqtt.client, client_broker: paho.mqtt.client):
             lista.append(data)
         index = next((i for i, item in enumerate(lista) if item['id'] == idSelect), -1) 
         if index != -1:
-            print("cheguei aqui")
             resultado = client_broker.publish("MonitorarPaciente",str(lista[index]))
             print(str(lista[index]))
             status = resultado[0]
             if status == 0:
-                print(f"Enviou de boa para topico de monitorar")
+                print(f"Foi enviado com sucesso para topico de monitorar")
             else:
                 print(f"Falhou ao enviar a mensagem ao topico de monitorar")
         ordenada = sorted(lista, key=lambda k: k['status'], reverse=True) 
