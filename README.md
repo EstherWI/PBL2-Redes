@@ -29,19 +29,23 @@ Criar arquivo *.env* na pasta raiz do diretório e setar as configurações.
 
 Ex env1:
 
+```bash
 FOG="FOG1"
 A=0
 B=100
 cliente_local=600
 cliente_publico=601
+```
 
 Ex env2:
 
+```bash
 FOG="FOG2"
 A = 200
 B = 300
 cliente_local = 602
 cliente_publico = 603
+```
 
 Observação: Caso queira rodar mais uma fog em local diferente, basta seguir os exemplos acima,
 diferenciando os nomes das fogs, o intevalo A e B e os clientes.
