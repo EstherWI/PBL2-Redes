@@ -3,7 +3,7 @@ import threading, os
 
 threads = []
 result = []
-maxNrOfThreads = 10
+maxNrOfThreads = 50
 topic = "paciente_pbl"
 
 
@@ -22,7 +22,7 @@ def connect_mqtt():
             print("Failed to connect, return code %d\n", rc)
     global result
     while len(result) != maxNrOfThreads:
-        r = random.randint(0,100)
+        r = random.randint(200,300)
         if r not in result:
             result.append(r)
             break
