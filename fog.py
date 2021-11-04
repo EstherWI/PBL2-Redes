@@ -6,8 +6,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-import threading
-
 
 host = 'localhost'
 port = 1883
@@ -20,7 +18,7 @@ heroku = 'https://connect-covid.herokuapp.com'
 
 
 # generate client ID with pub prefix randomly
-client_id = f'python-mqtt-{random.randint(0, 100)}'
+#client_id = f'python-mqtt-{random.randint(0, 100)}'
 
 def connect_mqtt() -> paho.mqtt.client:
     def on_connect(client, userdata, flags, rc):
@@ -29,20 +27,21 @@ def connect_mqtt() -> paho.mqtt.client:
         else:
             print("Failed to connect, return code %d\n", rc)
 
-    client = paho.mqtt.client.Client(client_id)
+    client = paho.mqtt.client.Client(client_id=f'python-mqtt-{101}', clean_session=False)
     client.on_connect = on_connect
     client.connect(host, port)
     return client
 
 def connect_broker() -> paho.mqtt.client:
-    def on_connect(client, userdata, flags, rc):
+    def on_connect_broker(client, userdata, flags, rc):
+        print(rc)
         if rc == 0:
             print("Connecto ao HiveMQ!")
         else:
             print("Falha na conexão, return code %d\n", rc)
 
-    client = paho.mqtt.client.Client(client_id,clean_session=False)
-    client.on_connect = on_connect
+    client = paho.mqtt.client.Client(client_id=f'python-mqtt-{102}',clean_session=False)
+    client.on_connect = on_connect_broker
     client.connect('broker.hivemq.com', port)
     return client
 
@@ -53,7 +52,7 @@ def subscribe(client: paho.mqtt.client, client_broker: paho.mqtt.client):
         print(data)
         idSelect = requests.get(url=f'{heroku}/getId').json()
         n = requests.get(url=f'{heroku}/getN').json()
-        print()
+        print(idSelect)
         data['fog'] = os.getenv("FOG")
         index = next((i for i, item in enumerate(lista) if item['id'] == data['id']), -1) 
         if index != -1:

@@ -1,11 +1,11 @@
 import paho.mqtt.client, time, json, random, names
-import threading
+import threading, os
 
 threads = []
+result = []
 maxNrOfThreads = 10
-
-
 topic = "paciente_pbl"
+
 
 # O retorno de chamada para quando uma mensagem publish é recebida do servidor.
 def on_message(mosq, obj, msg):
@@ -20,8 +20,13 @@ def connect_mqtt():
             print("Connected to MQTT Broker!")
         else:
             print("Failed to connect, return code %d\n", rc)
-
-    client=paho.mqtt.client.Client(client_id=str(random.randint(0, 95)),clean_session=False, userdata=names.get_full_name())
+    global result
+    while len(result) != maxNrOfThreads:
+        r = random.randint(0,100)
+        if r not in result:
+            result.append(r)
+            break
+    client=paho.mqtt.client.Client(client_id=str(r),clean_session=False, userdata=names.get_full_name())
     client.on_connect = on_connect
     client.connect(host='localhost', port = 1883)
     return client
@@ -97,7 +102,6 @@ def main():
 
     for thread in threads:
         thread.join()
-        main()
 
 if __name__ == '__main__':
     main()
