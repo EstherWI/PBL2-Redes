@@ -1,0 +1,5 @@
+paho-mqtt=1.5.1
+PyQt5=5.15.4
+python-dotenv=0.19.1
+requests=2.26.0
+names=0.3.0
