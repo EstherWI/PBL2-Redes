@@ -1,3 +1,18 @@
+'''
+ * Componente Curricular: Módulo Integrado de Concorrência e Conectividade
+ * Autor: Gustavo dos Santos Menezes Alves e Esther de Santana Araújo
+ * Data: 4/11/2021
+ *
+ * Declaro que este código foi elaborado por nós de forma colaborativa e
+ * não contém nenhum trecho de código de outro colega ou de outro autor,
+ * tais como provindos de livros e apostilas, e páginas ou documentos
+ * eletrônicos da Internet. Qualquer trecho de código de outra autoria que
+ * uma citação para o  não a minha está destacado com  autor e a fonte do
+ * código, e estou ciente que estes trechos não serão considerados para fins
+ * de avaliação. Alguns trechos do código podem coincidir com de outros
+ * colegas pois estes foram discutidos em sessões tutorias.
+ '''
+
 import json, os
 import requests
 import paho.mqtt.client
