@@ -16,6 +16,9 @@
 
 import paho.mqtt.client, time, json, random, names
 import threading, os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 #Este arquivo é responsável por realizar a publicação e atualização de X pacientes no broker local.
 #Sendo estes pacientes gerados de modo aleatório, em conjunto com seus dados de sinais vitais randomicamente.
@@ -25,7 +28,8 @@ import threading, os
 
 threads = []
 result = []
-maxNrOfThreads = 50
+#Quantidade máxima de pacientes criados em uma só execução
+maxNrOfThreads = 15
 topic = "paciente_pbl"
 
 #Esta função é responsável pela conexão de um cliente no broker público, contando com uma verficação de ID gerado
@@ -38,7 +42,7 @@ def connect_mqtt():
             print("Failed to connect, return code %d\n", rc)
     global result
     while len(result) != maxNrOfThreads:
-        r = random.randint(200,300)
+        r = random.randint(int(os.getenv("A")),int(os.getenv("B")))
         if r not in result:
             result.append(r)
             break

@@ -49,7 +49,7 @@ def connect_mqtt() -> paho.mqtt.client:
         else:
             print("Falhou a conexão, return code %d\n", rc)
 
-    client = paho.mqtt.client.Client(client_id=f'python-mqtt-{601}', clean_session=False)
+    client = paho.mqtt.client.Client(client_id=f'python-mqtt-{int(os.getenv("cliente_local"))}', clean_session=False)
     client.on_connect = on_connect
     client.connect(host, port)
     return client
@@ -61,7 +61,7 @@ def connect_broker() -> paho.mqtt.client:
         else:
             print("Falha na conexão, return code %d\n", rc)
 
-    client = paho.mqtt.client.Client(client_id=f'python-mqtt-{600}',clean_session=False)
+    client = paho.mqtt.client.Client(client_id=f'python-mqtt-{int(os.getenv("cliente_publico"))}',clean_session=False)
     client.on_connect = on_connect_broker
     client.connect('broker.hivemq.com', port)
     return client

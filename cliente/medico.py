@@ -247,8 +247,8 @@ class Ui_MainWindow(object):
         
 # Essa thread serve para realizar um serviço em paralelo de ficar enviando os sinais, que neste caso
 #  é a lista com N pacientes mais graves e o paciente selecionado na tela, para a função de manipular a lista , através das requisição GET.
-#As listas são limpadas a cada novo ciclo para que o proceso de atualização seja
-#feito de maneira correta , sem perdas ou duplicação de dados.
+#As listas são esvaziadas a cada novo ciclo para que o proceso de atualização seja
+#feito de maneira correta, sem perdas ou duplicação de dados.
 class MyThread(QtCore.QThread):
     ard_signal = QtCore.pyqtSignal(dict)
     update_signal = QtCore.pyqtSignal(dict)
